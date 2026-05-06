@@ -4,18 +4,17 @@ using MelonLoader.Preferences;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-//using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Unity.IO;
 using UnityEngine.EventSystems;
 #if !NOINPUTSYSTEM
 using UnityEngine.InputSystem;
 #endif
 using UnityEngine.UI;
-//using UnityEngine.UIElements;
 using static MilestoneManager.Milestone;
 using Button = UnityEngine.UI.Button;
 
@@ -37,12 +36,16 @@ namespace JModder
         private static GUIStyle JModStyleB = new GUIStyle();
         private static GUIStyle JModStyleS = new GUIStyle();
         private static GUIStyle JModStyleST = new GUIStyle();
+        private static GUIStyle JModStyleBlank = new GUIStyle();
 
         private static Color JModColor = new Color(0.0f, 0.85f, 0.85f);
 
         private static Texture2D consoleBackground = new Texture2D(1, 1, TextureFormat.RGBAFloat, false);
 
         private static Texture2D sliderBackground = new Texture2D(1, 1, TextureFormat.RGBAFloat, false);
+
+        private static Rect jModWindowRect;
+        private static Rect _screenRect;
 
         private static MelonPreferences_Category ModConfCategory;
         private static MelonPreferences_Category MultiplierFloatCategory;
@@ -201,6 +204,7 @@ namespace JModder
             {
                 UnityEngine.Cursor.lockState = lastLockMode;
                 UnityEngine.Cursor.visible = lastVisibleState;
+                MelonPreferences.Save();
             }
             showCheatsPopup = !showCheatsPopup;
             return showCheatsPopup;
@@ -221,7 +225,23 @@ namespace JModder
 
                 JModStyleST = GUI.skin.GetStyle("horizontalsliderthumb");
 
-                GUI.Window(0, new Rect(Screen.width / 2 - 425, Screen.height / 2 - 425, 850, 850), ModMenuWindow, "MOD OPTIONS", JModStyleB);
+                jModWindowRect = new Rect(Screen.width / 2 - 425, Screen.height / 2 - 425, 850, 850);
+                _screenRect = new Rect(0, 0, Screen.width, Screen.height);
+
+                GUI.Window(0, jModWindowRect, ModMenuWindow, "MOD OPTIONS", JModStyleB);
+
+                Vector2 mousePosition = Input.mousePosition;
+                mousePosition.y = Screen.height - mousePosition.y;
+
+                if (GUI.Button(_screenRect, string.Empty, JModStyleBlank) && !jModWindowRect.Contains(mousePosition))
+                {
+
+                }
+
+                if (jModWindowRect.Contains(mousePosition) && !Input.GetKeyDown(configMenuToggle.Value) && !Input.GetKeyUp(configMenuToggle.Value))
+                {
+                    Input.ResetInputAxes();
+                }
 
             }
         }
@@ -240,7 +260,6 @@ namespace JModder
             ShowIntMenu(ref xAxis, ref yAxis, ref MultiplierIntCategory);
             yAxis += 15;
 
-            //foreach (MelonPreferences_Category category in CustomCategoryList)
             for (int i = 0; i < CustomCategoryList.Count ; i++)
             {
                 var tmpcat = CustomCategoryList[i];
@@ -273,15 +292,7 @@ namespace JModder
 
             if (GUI.Button(new Rect(325, 810, 200, 35), "Save settings and close"))
             {
-                if (Event.current.type == EventType.MouseDown && Event.current.button == 0 || Input.GetMouseButtonDown(0))
-                {
-                    // This if statement Uses up the current MouseDown event so that
-                    // subsequent code or GUI elements ignore this MouseDown event. 
-                    Event.current.Use();
-                }
-                MelonPreferences.Save();
                 SwitchMenu();
-                Event.current.Use();
             }
         }
 

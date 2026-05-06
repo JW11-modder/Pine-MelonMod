@@ -8,7 +8,7 @@ using static AssetBundles;
 using static Human;
 using static Rewired.ComponentControls.Effects.RotateAroundAxis;
 
-[assembly: MelonInfo(typeof(PineMelonMod.Core), "PineMelonMod", "1.0.0", "Jade", null)]
+[assembly: MelonInfo(typeof(PineMelonMod.Core), "jw11-modder.PineMelonMod", "1.0.0", "jw11-modder", null)]
 [assembly: MelonGame("Twirlbound", "Pine")]
 
 namespace PineMelonMod
@@ -74,7 +74,7 @@ namespace PineMelonMod
         public override void OnUpdate()
         {
             
-            if (Input.GetKeyUp(configMenuToggle.Value))
+            if (Input.GetKeyDown(configMenuToggle.Value))
             {
                 //ControlManager.InputManager
                 if (JMod.SwitchMenu())
@@ -85,11 +85,6 @@ namespace PineMelonMod
                 {
                     JMod.Log("Hide mod menu!");
                 }
-            }
-            if (JMod.showCheatsPopup)
-            {
-                if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
-                    Event.current.Use();
             }
         }
 
